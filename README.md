@@ -7,3 +7,7 @@ load text format fortune cookie file which has no extension.
 
 
 see fortune_test.go for example 
+
+need 
+
+	"github.com/kasworld/log" 
