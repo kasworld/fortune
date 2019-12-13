@@ -1,4 +1,4 @@
-// Copyright 2015 SeukWon Kang (kasworld@gmail.com)
+// Copyright 2015,2016,2017,2018,2019 SeukWon Kang (kasworld@gmail.com)
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -14,18 +14,16 @@ package fortune
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/kasworld/log"
 )
 
-func LoadFile(filename string) []string {
+func LoadFile(filename string) ([]string, error) {
 	fd, err := os.Open(filename)
 	if err != nil {
-		log.Error("err in open %v\n", err)
-		return nil
+		return nil, fmt.Errorf("err in open %v\n", err)
 	}
 	defer fd.Close()
 	rtn := make([]string, 0)
@@ -36,19 +34,22 @@ func LoadFile(filename string) []string {
 		rtn = append(rtn, s)
 	}
 	if err := scanner.Err(); err != nil {
-		log.Error("reading %v %v", filename, err)
+		return nil, fmt.Errorf("reading %v %v", filename, err)
 	}
-	return rtn
+	return rtn, nil
 }
 
-func LoadDir(dir string) []string {
+func LoadDir(dir string) ([]string, error) {
 	// dir := "/usr/share/games/fortunes"
 	rtn := make([]string, 0)
 	for _, v := range listFiles(dir) {
-		l := LoadFile(v)
+		l, err := LoadFile(v)
+		if err != nil {
+			return nil, err
+		}
 		rtn = append(rtn, l...)
 	}
-	return rtn
+	return rtn, nil
 }
 
 func listFiles(basedir string) []string {
